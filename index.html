@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QWorld — Minecraft Сервер от qrenqq</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a25;
+            --accent: #7c3aed;
+            --accent-light: #a78bfa;
+            --accent-glow: rgba(124, 58, 237, 0.3);
+            --text-primary: #f1f1f1;
+            --text-secondary: #a0a0b0;
+            --border: #2a2a3a;
+            --green: #22c55e;
+            --blue: #3b82f6;
+            --red: #ef4444;
+            --yellow: #eab308;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* === ANIMATED BACKGROUND === */
+        .bg-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-effects .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-effects .orb:nth-child(1) {
+            width: 600px;
+            height: 600px;
+            background: var(--accent);
+            top: -200px;
+            right: -200px;
+            animation-delay: 0s;
+        }
+
+        .bg-effects .orb:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            background: #3b82f6;
+            bottom: -100px;
+            left: -100px;
+            animation-delay: -7s;
+        }
+
+        .bg-effects .orb:nth-child(3) {
+            width: 300px;
+            height: 300px;
+            background: #22c55e;
+            top: 50%;
+            left: 50%;
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(50px, -50px) scale(1.1); }
+            50% { transform: translate(-30px, 30px) scale(0.9); }
+            75% { transform: translate(40px, 20px) scale(1.05); }
+        }
+
+        /* === PARTICLES === */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-light);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particle-rise 8s ease-in-out infinite;
+        }
+
+        @keyframes particle-rise {
+            0% { opacity: 0; transform: translateY(100vh) scale(0); }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.3; }
+            100% { opacity: 0; transform: translateY(-20vh) scale(1); }
+        }
+
+        /* === CONTAINER === */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* === HEADER / HERO === */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            background: rgba(124, 58, 237, 0.1);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--accent-light);
+            margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .hero-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--accent-light), var(--accent), #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #5b21b6);
+            color: white;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+            transform: translateY(-2px);
+        }
+
+        /* === IP COPY === */
+        .server-ip {
+            margin-top: 40px;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+
+        .ip-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 28px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .ip-box:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .ip-box .label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .ip-box .ip {
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            color: var(--accent-light);
+        }
+
+        .ip-box .copy-icon {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .ip-box .copied-msg {
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--green);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .ip-box .copied-msg.show {
+            opacity: 1;
+        }
+
+        /* === SECTIONS === */
+        section {
+            padding: 100px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* === FEATURES === */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            padding: 32px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* === RULES === */
+        .rules-list {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .rule-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .rule-item:hover {
+            border-color: var(--accent);
+        }
+
+        .rule-number {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent), #5b21b6);
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        .rule-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+
+        .rule-text strong {
+            color: var(--text-primary);
+        }
+
+        /* === SOCIAL === */
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .social-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 24px 28px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .social-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        .social-card.youtube:hover { border-color: var(--red); }
+        .social-card.twitch:hover { border-color: #9146FF; }
+        .social-card.telegram:hover { border-color: #0088cc; }
+        .social-card.discord:hover { border-color: #5865F2; }
+
+        .social-icon {
+            font-size: 2.5rem;
+            flex-shrink: 0;
+        }
+
+        .social-info h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .social-info p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* === FOOTER === */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        footer .heart {
+            color: var(--red);
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1rem; }
+            section { padding: 60px 0; }
+            .section-header h2 { font-size: 2rem; }
+            .features-grid { grid-template-columns: 1fr; }
+            .social-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Effects -->
+    <div class="bg-effects">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <!-- Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span class="dot"></span>
+            Сервер онлайн — Версия 1.21+
+        </div>
+
+        <h1><span class="gradient">QWorld</span></h1>
+        <h1 style="font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 400; color: var(--text-secondary); margin-top: -10px;">Minecraft сервер от qrenqq</h1>
+
+        <p style="margin-top: 24px;">
+            Уютное выживание с голосовым чатом, экономикой и живым сообществом. 
+            Никаких донат-привилегий — только скилл и дружба.
+        </p>
+
+        <div class="hero-buttons">
+            <a href="https://discord.gg/ТВОЙ_ДИСКОРД" class="btn btn-primary">
+                🎮 Discord сервера
+            </a>
+            <a href="#features" class="btn btn-secondary">
+                📖 Узнать больше
+            </a>
+        </div>
+
+        <div class="server-ip">
+            <div class="ip-box" onclick="copyIP()">
+                <span class="copied-msg" id="copiedMsg">Скопировано!</span>
+                <span class="label">IP адрес:</span>
+                <span class="ip" id="serverIP">play.qworld.ru</span>
+                <span class="copy-icon">📋</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Что тебя ждёт? ⚡</h2>
+                <p>QWorld — это не просто сервер. Это место, где рождаются истории.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🎙️</div>
+                    <h3>Голосовой чат</h3>
+                    <p>Simple Voice Chat — общайся с игроками по близости, как в реальной жизни. Шепчи, кричи, пой.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">💰</div>
+                    <h3>Живая экономика</h3>
+                    <p>Создавай магазины, торгуй ресурсами, устраивай аукционы. Стань самым богатым игроком сервера.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🏰</div>
+                    <h3>Города и нации</h3>
+                    <p>Строй свой город, приглашай жителей, заключай альянсы или объявляй войны.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">⚔️</div>
+                    <h3>RPG прокачка</h3>
+                    <p>Прокачивай навыки: добычу, крафт, сражения, рыбалку. Каждое действие делает тебя сильнее.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🗺️</div>
+                    <h3>Онлайн-карта</h3>
+                    <p>Dynmap — смотри мир сервера в браузере. Находи города, базы и неизведанные территории.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Защита от гриферов</h3>
+                    <p>Приватизация территории, логирование всех действий. Твоя база в полной безопасности.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RULES -->
+    <section id="rules" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Правила 📜</h2>
+                <p>Мы за адекватность и уважение</p>
+            </div>
+
+            <div class="rules-list">
+                <div class="rule-item fade-in">
+                    <span class="rule-number">1</span>
+                    <span class="rule-text"><strong>Уважай других.</strong> Никакого токсика, оскорблений, расизма и прочего неадеквата.</span>
+                </div>
+                <div class="rule-item fade-in">
+                    <span class="rule-number">2</span>
+                    <span class="rule-text"><strong>Не гриферь.</strong> Не ломай и не воруй чужое имущество. CoreProtect видит всё.</span>
+                </div>
+                <div class="rule-item fade-in">
+                    <span class="rule-number">3</span>
+                    <span class="rule-text"><strong>Не используй читы.</strong> Любые модификации дающие преимущество = бан.</span>
+                </div>
+                <div class="rule-item fade-in">
+                    <span class="rule-number">4</span>
+                    <span class="rule-text"><strong>PvP только по согласию.</strong> Нельзя нападать на игроков без их согласия (кроме PvP-зон).</span>
+                </div>
+                <div class="rule-item fade-in">
+                    <span class="rule-number">5</span>
+                    <span class="rule-text"><strong>Не спамь и не рекламируй.</strong> Реклама сторонних серверов, каналов — бан.</span>
+                </div>
+                <div class="rule-item fade-in">
+                    <span class="rule-number">6</span>
+                    <span class="rule-text"><strong>Адекватные постройки.</strong> Не стройте неприличные или нацистские конструкции.</span>
+                </div>
+                <div class="rule-item fade-in">
+                    <span class="rule-number">7</span>
+                    <span class="rule-text"><strong>Решение администрации — финальное.</strong> Если есть вопросы — пиши в Discord.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SOCIAL -->
+    <section id="social">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Наши площадки 🔗</h2>
+                <p>Подписывайся, чтобы не пропустить ивенты и обновления</p>
+            </div>
+
+            <div class="social-grid">
+                <a href="https://www.youtube.com/@qrenqq" target="_blank" class="social-card youtube fade-in">
+                    <span class="social-icon">🔴</span>
+                    <div class="social-info">
+                        <h3>YouTube</h3>
+                        <p>Видео, летсплеи и лучшие моменты с сервера</p>
+                    </div>
+                </a>
+
+                <a href="https://www.twitch.tv/qrenqq" target="_blank" class="social-card twitch fade-in">
+                    <span class="social-icon">🟣</span>
+                    <div class="social-info">
+                        <h3>Twitch</h3>
+                        <p>Стримы на сервере и не только</p>
+                    </div>
+                </a>
+
+                <a href="https://t.me/qrentg" target="_blank" class="social-card telegram fade-in">
+                    <span class="social-icon">🔵</span>
+                    <div class="social-info">
+                        <h3>Telegram</h3>
+                        <p>Новости, анонсы и общение</p>
+                    </div>
+                </a>
+
+                <a href="https://discord.gg/ТВОЙ_ДИСКОРД" target="_blank" class="social-card discord fade-in">
+                    <span class="social-icon">💬</span>
+                    <div class="social-info">
+                        <h3>Discord</h3>
+                        <p>Основной хаб сообщества сервера</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2025 QWorld — Minecraft сервер от qrenqq | Сделано с <span class="heart">❤️</span></p>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script>
+        // === Copy IP ===
+        function copyIP() {
+            const ip = document.getElementById('serverIP').textContent;
+            navigator.clipboard.writeText(ip);
+            const msg = document.getElementById('copiedMsg');
+            msg.classList.add('show');
+            setTimeout(() => msg.classList.remove('show'), 2000);
+        }
+
+        // === Scroll animations ===
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // === Particles ===
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 8 + 's';
+            particle.style.animationDuration = (6 + Math.random() * 6) + 's';
+            particlesContainer.appendChild(particle);
+        }
+    </script>
+
+</body>
+</html>
